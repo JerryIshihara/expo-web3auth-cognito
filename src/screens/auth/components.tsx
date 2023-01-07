@@ -35,7 +35,6 @@ export const Button = (props: ButtonProps) => {
 				alignItems: "center",
 				justifyContent: "center",
 				width: "100%",
-				marginVertical: 10,
 			}}
 		>
 			{props.iconLeft && props.iconLeft({ color: "#222", size: 20, style: { marginRight: 10 } })}

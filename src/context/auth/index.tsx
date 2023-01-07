@@ -5,25 +5,33 @@ import { Auth, Hub } from "aws-amplify";
 
 import Web3Auth from "src/context/auth/web3auth";
 import { AWSCognito } from "./aws-cognito";
+import { useAlert } from "../alert";
 
+type LOGIN_TYPE = "google" | "email" | "apple";
+interface LoginProps {
+	type: LOGIN_TYPE;
+	email?: string;
+}
 interface AuthContextProps {
 	loading: boolean;
-	cognitoUser: object | undefined;
+	cognitoUser: any | undefined;
 	web3AuthInfo: object | undefined;
-	login: () => void;
 	signout: () => void;
-	loginWithGoogle: () => void;
-	loginWithApple: () => void;
-	logiWithCryptoWallet: () => void;
+	login: (props: LoginProps) => void;
+	// loginWithEmail: (email: string) => void;
+	// loginWithGoogle: () => void;
+	// loginWithApple: () => void;
+	loginWithCryptoWallet: () => void;
 }
 
 export const AuthContext = React.createContext<Partial<AuthContextProps>>({ loading: false });
 
 export const AuthContextProvider = (props: any) => {
+	const alert = useAlert();
 	const connector = useWalletConnect();
 	const [loading, setLoading] = useState<boolean>(false);
 	const [web3AuthInfo, setWeb3AuthInfo] = useState<object | undefined>();
-	const [cognitoUser, setCognitoUser] = useState<object | undefined>();
+	const [cognitoUser, setCognitoUser] = useState<any | undefined>();
 
 	useEffect(() => {
 		const unsubscribe = Hub.listen("auth", ({ payload: { event, data } }) => {
@@ -48,26 +56,55 @@ export const AuthContextProvider = (props: any) => {
 	}, []);
 
 	//////////////////////////////// Public Methods //////////////////////////////
-	const login = () => {
-		setCognitoUser({});
-	};
 	const signout = async () => {
-		await Auth.signOut();
+		setLoading(true);
+		if (cognitoUser) await Auth.signOut();
 		if (connector.connected) await connector.killSession();
+		setLoading(false);
 		setCognitoUser(undefined);
 		setWeb3AuthInfo(undefined);
 	};
-	const loginWithGoogle = async () => {
-		const { wallet } = await Web3Auth.googleLogin();
-		const signMessage = async (m: string) => await wallet.signMessage(m);
-		_cognitoSignInWithKeyPair(wallet.address, signMessage);
+
+	// const loginWithEmail = async (email: string) => {
+	// 	const { wallet } = await Web3Auth.passwordlessLogin(email);
+	// 	const signMessage = async (m: string) => await wallet.signMessage(m);
+	// 	_cognitoSignInWithKeyPair(wallet.address, signMessage);
+	// };
+	// const loginWithGoogle = async () => {
+	// 	const { wallet } = await Web3Auth.googleLogin();
+	// 	const signMessage = async (m: string) => await wallet.signMessage(m);
+	// 	_cognitoSignInWithKeyPair(wallet.address, signMessage);
+	// };
+	// const loginWithApple = async () => {
+	// 	const { wallet } = await Web3Auth.appleLogin();
+	// 	const signMessage = async (m: string) => await wallet.signMessage(m);
+	// 	_cognitoSignInWithKeyPair(wallet.address, signMessage);
+	// };
+
+	const login = async (props: LoginProps) => {
+		try {
+			let info: any;
+			switch (props.type) {
+				case "google":
+					info = await Web3Auth.googleLogin();
+					break;
+				case "apple":
+					info = await Web3Auth.appleLogin();
+					break;
+				case "email":
+					if (!props.email) throw new Error();
+					info = await Web3Auth.passwordlessLogin(props.email as string);
+				default:
+					break;
+			}
+			if (!info || !info.wallet) throw new Error();
+			const signMessage = async (m: string) => await info.wallet.signMessage(m);
+			_cognitoSignInWithKeyPair(info.wallet.address, signMessage);
+		} catch {
+			alert.pop && alert.pop({ status: "error", title: "Login failed, please try again" });
+		}
 	};
-	const loginWithApple = async () => {
-		const { wallet } = await Web3Auth.appleLogin();
-		const signMessage = async (m: string) => await wallet.signMessage(m);
-		_cognitoSignInWithKeyPair(wallet.address, signMessage);
-	};
-	const logiWithCryptoWallet = useCallback(async () => {
+	const loginWithCryptoWallet = useCallback(async () => {
 		console.log(connector.connected);
 		if (!connector.connected) await connector.connect();
 	}, [connector]);
@@ -89,20 +126,10 @@ export const AuthContextProvider = (props: any) => {
 	//////////////////////////////// Private Methods //////////////////////////////
 	const _cognitoSignInWithKeyPair = async (address: string, signMessage: (message: string) => Promise<string>) => {
 		console.log("account:", address);
-		
+
 		setLoading(true);
 		setCognitoUser(await AWSCognito.signIn(address, signMessage));
 		setLoading(false);
-	};
-
-	const logout = async () => {
-		await SecureStore.deleteItemAsync("secure_token")
-			.then(res => {
-				setCognitoUser(undefined);
-			})
-			.catch(e => {
-				console.warn(e);
-			});
 	};
 
 	return (
@@ -111,11 +138,12 @@ export const AuthContextProvider = (props: any) => {
 				loading,
 				cognitoUser,
 				web3AuthInfo,
-				login,
 				signout,
-				loginWithGoogle,
-				loginWithApple,
-				logiWithCryptoWallet,
+				login,
+				// loginWithEmail,
+				// loginWithGoogle,
+				// loginWithApple,
+				loginWithCryptoWallet,
 				// getTokenFromSecureStore,
 				// logout,
 			}}

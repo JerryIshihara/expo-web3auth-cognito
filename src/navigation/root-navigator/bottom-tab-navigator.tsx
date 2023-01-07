@@ -1,40 +1,40 @@
-import { useEffect } from "react";
 import { Pressable, View, Text } from "react-native";
-import { createDrawerNavigator, DrawerContentScrollView, getDrawerStatusFromState } from "@react-navigation/drawer";
-import { FontAwesome5, Ionicons } from "@expo/vector-icons";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { Foundation, Ionicons, FontAwesome5, Entypo } from "@expo/vector-icons";
 
 import Colors from "src/constants/Colors";
 import useColorScheme from "src/hooks/useColorScheme";
+import TabTwoScreen from "src/screens/TabTwoScreen";
 import { RootTabParamList, RootTabScreenProps } from "src/types";
 import HomeScreen from "src/screens/home";
-import HomeScreenDrawer from "src/screens/home/drawer";
 
-function DrawerContent(props: any) {
-	return (
-		<DrawerContentScrollView {...props}>
-			<HomeScreenDrawer />
-		</DrawerContentScrollView>
-	);
-}
+/**
+ * A bottom tab navigator displays tab buttons on the bottom of the display to switch screens.
+ * https://reactnavigation.org/docs/bottom-tab-navigator
+ */
+const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
-const Drawer = createDrawerNavigator();
-export default function HomeDrawerNavigator(props: any) {
-    const colorScheme = useColorScheme();
+export default function BottomTabNavigator({ navigation} : any) {
+	const colorScheme = useColorScheme();
+
 	return (
-		<Drawer.Navigator
+		<BottomTab.Navigator
+			initialRouteName="Home"
 			screenOptions={{
-				headerTitle: "",
+				tabBarActiveTintColor: Colors[colorScheme].tint,
+				tabBarInactiveTintColor: Colors[colorScheme].inactive,
+				tabBarShowLabel: false,
 				headerStyle: {
 					elevation: 0, // remove shadow on Android
 					shadowOpacity: 0, // remove shadow on iOS
 				},
 			}}
-			drawerContent={props => <DrawerContent {...props} />}
 		>
-			<Drawer.Screen
+			<BottomTab.Screen
 				name="Home"
 				component={HomeScreen}
-                options={({ navigation }: any) => ({
+				options={({ navigation }: any) => ({
+					title: "",
 					headerLeft: () => (
 						<Pressable
 							onPress={() => {
@@ -57,8 +57,18 @@ export default function HomeDrawerNavigator(props: any) {
 							<FontAwesome5 name="info-circle" size={20} color={Colors[colorScheme].text} style={{ marginRight: 25 }} />
 						</Pressable>
 					),
+					tabBarIcon: ({ color }) => <Foundation name="home" color={color} size={30} />,
 				})}
 			/>
-		</Drawer.Navigator>
+			<BottomTab.Screen
+				name="TabTwo"
+				component={TabTwoScreen}
+				options={{
+					title: "Tab Two",
+					headerShown: false,
+					tabBarIcon: ({ color }) => <Ionicons name="wallet" color={color} size={30} />,
+				}}
+			/>
+		</BottomTab.Navigator>
 	);
 }

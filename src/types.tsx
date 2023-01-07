@@ -18,9 +18,17 @@ export type AuthStackParamList = {
 	Signup: undefined;
 };
 
+
+export type SettingsStackParamList = {
+	Login: undefined;
+	Signup: undefined;
+};
+
 export type RootStackParamList = {
 	Auth: NavigatorScreenParams<AuthStackParamList> | undefined;
 	Root: NavigatorScreenParams<RootTabParamList> | undefined;
+	Profile: undefined; 
+	Settings: undefined; 
 	Modal: undefined;
 	NotFound: undefined;
 };
@@ -30,7 +38,7 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> = Nati
 export type AuthStackScreenProps<Screen extends keyof AuthStackParamList> = NativeStackScreenProps<AuthStackParamList, Screen>;
 
 export type RootTabParamList = {
-	TabOne: undefined;
+	Home: undefined;
 	TabTwo: undefined;
 };
 

@@ -31,8 +31,21 @@ const socialLogin = async (loginProvider: LOGIN_PROVIDER_TYPE) => {
 		wallet: await RPC.getWallet(info.privKey as string),
 	};
 };
+const passwordlessLogin = async (email: string) => {
+	const info = await web3auth.login({
+		loginProvider: LOGIN_PROVIDER.EMAIL_PASSWORDLESS,
+		redirectUrl: resolvedRedirectUrl,
+		extraLoginOptions: {
+			login_hint: email,
+		},
+	});
+	return {
+		...info,
+		wallet: await RPC.getWallet(info.privKey as string),
+	};
+};
 
 const googleLogin = async () => await socialLogin(LOGIN_PROVIDER.GOOGLE);
 const appleLogin = async () => await socialLogin(LOGIN_PROVIDER.APPLE);
 
-export default { googleLogin, appleLogin };
+export default { googleLogin, appleLogin, passwordlessLogin };

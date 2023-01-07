@@ -11,7 +11,8 @@
 		"skipLibCheck": true,
 		"resolveJsonModule": true,
 		"typeRoots": ["index.d.ts"],
-		"types": ["node", "jest"]
+		"types": ["node", "jest"],
+		"experimentalDecorators": true
 	},
 	"include": ["**/*.ts", "**/*.tsx"],
 	"exclude": [

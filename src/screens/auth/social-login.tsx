@@ -32,15 +32,15 @@ export default function SocialLogin() {
 	return (
 		<View style={{ width: "100%", marginBottom: 30 }}>
 			<Divider text={"or"} color="#555" space={30} />
-			<TouchableOpacity onPress={auth.loginWithGoogle} style={styles.socialButton}>
+			<TouchableOpacity onPress={() => auth.login && auth.login({type: "google"})} style={styles.socialButton}>
 				<Image source={google} style={{ width: 17, height: 17 }} />
 				<Text style={styles.socialButtonText}>Continue with Google</Text>
 			</TouchableOpacity>
-			<TouchableOpacity onPress={auth.loginWithApple} style={styles.socialButton}>
+			<TouchableOpacity onPress={() => auth.login && auth.login({type: "apple"})} style={styles.socialButton}>
 				<AntDesign name="apple1" size={17} color="black" style={{ marginTop: -3 }} />
 				<Text style={styles.socialButtonText}>Continue with Apple</Text>
 			</TouchableOpacity>
-			<TouchableOpacity onPress={auth.logiWithCryptoWallet} style={styles.socialButton}>
+			<TouchableOpacity onPress={auth.loginWithCryptoWallet} style={styles.socialButton}>
 				{/* <Image source={metamask} style={{ width: 17, height: 17 }} /> */}
 				<Ionicons name="wallet" size={17} color="black" />
 				<Text style={styles.socialButtonText}>Continue with Wallet</Text>

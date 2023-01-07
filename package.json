@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "start": "expo start && rm -rf node_modules/@walletconnect/react-native-dapp/node_modules/react-native-svg" ,
+    "start": "expo start && rm -rf node_modules/@walletconnect/react-native-dapp/node_modules/react-native-svg",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",

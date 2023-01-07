@@ -1,19 +1,16 @@
 import "./global";
-import { registerRootComponent } from "expo";
-import { Platform } from "react-native";
 import "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
 import WalletConnectProvider from "@walletconnect/react-native-dapp";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NativeBaseProvider } from "native-base";
-import Constants, { AppOwnership } from "expo-constants";
 import * as Linking from "expo-linking";
 
 import useCachedResources from "./src/hooks/useCachedResources";
 import useColorScheme from "./src/hooks/useColorScheme";
 import Navigation from "./src/navigation";
 import { AuthContextProvider } from "./src/context/auth";
-
+import { AlertContextProvider } from "./src/context/alert";
 
 export default function App() {
 	const isLoadingComplete = useCachedResources();
@@ -32,15 +29,17 @@ export default function App() {
 					// 	icons: ["https://walletconnect.org/walletconnect-logo.png"],
 					// 	name: "WalletConnect",
 					// }}
-					redirectUrl={"myapp://"}
+					redirectUrl={Linking.createURL("")}
 					storageOptions={{
 						asyncStorage: AsyncStorage as any,
 					}}
 				>
-				<AuthContextProvider>
-					<Navigation colorScheme={colorScheme} />
-					<StatusBar />
-				</AuthContextProvider>
+					<AlertContextProvider>
+						<AuthContextProvider>
+							<Navigation colorScheme={colorScheme} />
+							<StatusBar />
+						</AuthContextProvider>
+					</AlertContextProvider>
 				</WalletConnectProvider>
 			</NativeBaseProvider>
 		);

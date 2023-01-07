@@ -11,7 +11,8 @@ export const styles = StyleSheet.create({
 		justifyContent: "flex-start",
 	},
     title: {
-        marginVertical: 50,
+		marginVertical: 80,
+		marginBottom: 50,
 		fontSize: 30,
 		fontWeight: "bold",
 	},
