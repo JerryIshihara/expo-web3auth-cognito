@@ -10,9 +10,11 @@ Login to Cognito with the key pair (relayed by the Web3Auth provider). Cognito w
 
 
 ### Run Demo
+
 - `yarn` to install dependencies
 - Delete the duplicated react-native-svg in `@walletconnect` package.
 ```shell
 rm -rf node_modules/@walletconnect/react-native-dapp/node_modules/react-native-svg
 ```
+- Fill `.env.template` and save as `.env`
 - `expo start`
